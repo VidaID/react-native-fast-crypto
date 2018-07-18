@@ -41,6 +41,21 @@ async function publicKeyTweakAdd (publicKey: Uint8Array, tweak: Uint8Array, comp
   return outBuf
 }
 
+async function publicKeyTweakMul (publicKey: Uint8Array, tweak: Uint8Array) {
+  const publicKeyHex = base16.stringify(publicKey)
+  const tweakHex = base16.stringify(tweak)
+  const publickKeyTweakedHex: string = await RNFastCrypto.secp256k1EcPubkeyTweakMul(publicKeyHex, tweakHex)
+  const outBuf = base16.parse(publickKeyTweakedHex, { out: Buffer.allocUnsafe })
+  return outBuf
+}
+
+async function publicKeyValid (publicKey: Uint8Array, compressed: boolean) {
+  const publicKeyHex = base16.stringify(publicKey);
+  const publicKeyParsedHex: string = await RNFastCrypto.secp256k1EcPubkeyValid(publicKeyHex, compressed)
+  const outBuf = base16.parse(publicKeyParsedHex, { out: Buffer.allocUnsafe })
+  return outBuf
+}
+
 async function pbkdf2DeriveAsync(key: Uint8Array, salt: Uint8Array, iter: number, len: number, alg: string) {
   if (alg !== 'sha512') {
     throw new Error('ErrorUnsupportedPbkdf2Algorithm: ' + alg)
@@ -55,7 +70,9 @@ async function pbkdf2DeriveAsync(key: Uint8Array, salt: Uint8Array, iter: number
 export const secp256k1 = {
   publicKeyCreate,
   privateKeyTweakAdd,
-  publicKeyTweakAdd
+  publicKeyTweakAdd,
+  publicKeyTweakMul,
+  publicKeyValid
 }
 
 export const pbkdf2 = {

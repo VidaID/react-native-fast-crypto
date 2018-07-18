@@ -167,8 +167,81 @@ void fast_crypto_secp256k1_ec_pubkey_tweak_add(char *szPublicKeyHex, const char 
         return;
     }
 
+    unsigned char output[DECOMPRESSED_PUBKEY_LENGTH + 64 + 1];
+    size_t output_length = DECOMPRESSED_PUBKEY_LENGTH;
+    flags = SECP256K1_EC_UNCOMPRESSED;
+    secp256k1_ec_pubkey_serialize(secp256k1ctx, &output[0], &output_length, &public_key, flags);
+    bytesToHex((uint8_t *)output, output_length, szPublicKeyHex);
+}
+
+void fast_crypto_secp256k1_ec_pubkey_tweak_mul(char *szPublicKeyHex, const char *szTweak){
+    if (secp256k1ctx == NULL) {
+        secp256k1ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+    }
+
+    //int flags = compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED;
+    int flags =  SECP256K1_EC_UNCOMPRESSED;
+
+    //int publicKeyLen = compressed ? COMPRESSED_PUBKEY_LENGTH : DECOMPRESSED_PUBKEY_LENGTH;
+    int publicKeyLen = DECOMPRESSED_PUBKEY_LENGTH;
+
+    unsigned char publicKey[DECOMPRESSED_PUBKEY_LENGTH];
+    unsigned char tweak[DECOMPRESSED_PUBKEY_LENGTH];
+
+    bool success = hexToBytes(szPublicKeyHex, publicKey);
+    if (!success) {
+        szPublicKeyHex[0] = 0;
+        return;
+    }
+
+    success = hexToBytes(szTweak, tweak);
+    if (!success) {
+        szPublicKeyHex[0] = 0;
+        return;
+    }
+
+    secp256k1_pubkey public_key;
+    if (secp256k1_ec_pubkey_parse(secp256k1ctx, &public_key, publicKey, publicKeyLen) == 0) {
+        szPublicKeyHex[0] = 0;
+        return;
+    }
+
+    if (secp256k1_ec_pubkey_tweak_mul(secp256k1ctx, &public_key, tweak) == 0) {
+        szPublicKeyHex[0] = 0;
+        return;
+    }
+
     unsigned char output[DECOMPRESSED_PUBKEY_LENGTH];
     size_t output_length = DECOMPRESSED_PUBKEY_LENGTH;
+    secp256k1_ec_pubkey_serialize(secp256k1ctx, &output[0], &output_length, &public_key, flags);
+    bytesToHex((uint8_t *)output, output_length, szPublicKeyHex);
+}
+
+void fast_crypto_secp256k1_ec_pubkey_valid(char *szPublicKeyHex, int compressed){
+    if (secp256k1ctx == NULL) {
+        secp256k1ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+    }
+
+    int flags = compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED;
+    int publicKeyLen = compressed ? COMPRESSED_PUBKEY_LENGTH : DECOMPRESSED_PUBKEY_LENGTH;
+
+    unsigned char publicKey[DECOMPRESSED_PUBKEY_LENGTH];
+
+    bool success = hexToBytes(szPublicKeyHex, publicKey);
+    if (!success) {
+        szPublicKeyHex[0] = 0;
+        return;
+    }
+
+    secp256k1_pubkey public_key;
+    if (secp256k1_ec_pubkey_parse(secp256k1ctx, &public_key, publicKey, publicKeyLen) == 0) {
+        szPublicKeyHex[0] = 0;
+        return;
+    }
+
+    unsigned char output[DECOMPRESSED_PUBKEY_LENGTH + 64 + 1];
+    size_t output_length = DECOMPRESSED_PUBKEY_LENGTH;
+    flags = SECP256K1_EC_UNCOMPRESSED;
     secp256k1_ec_pubkey_serialize(secp256k1ctx, &output[0], &output_length, &public_key, flags);
     bytesToHex((uint8_t *)output, output_length, szPublicKeyHex);
 }

@@ -13,15 +13,15 @@ export BUILD_DIR=$CURRENT_DIR/native-libs/deps/build
 touch native-libs/deps/recipes/native-crypto/native-crypto.recipe
 (
     cd native-libs/deps
-    make native-crypto.package-ios-universal $@
+    #make native-crypto.package-ios-universal $@
     make native-crypto.build-android-arm native-crypto.build-android-x86 $@
 )
 
 # Copy the results locally:
-mkdir -m 0775 -p ios/Headers
-mkdir -m 0775 -p ios/Libraries
-cp -aL $BUILD_DIR/native-crypto/native-crypto-ios-universal/include/* ios/Headers
-cp -a $BUILD_DIR/native-crypto/native-crypto-ios-universal/lib/* ios/Libraries
+#mkdir -m 0775 -p ios/Headers
+#mkdir -m 0775 -p ios/Libraries
+#cp -aL $BUILD_DIR/native-crypto/native-crypto-ios-universal/include/* ios/Headers
+#cp -a $BUILD_DIR/native-crypto/native-crypto-ios-universal/lib/* ios/Libraries
 
 BASE="./android"
 JNI_DIR="$BASE/jni"
