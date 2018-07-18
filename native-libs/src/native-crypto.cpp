@@ -167,7 +167,7 @@ void fast_crypto_secp256k1_ec_pubkey_tweak_add(char *szPublicKeyHex, const char 
         return;
     }
 
-    unsigned char output[DECOMPRESSED_PUBKEY_LENGTH + 64 + 1];
+    unsigned char output[DECOMPRESSED_PUBKEY_LENGTH];
     size_t output_length = DECOMPRESSED_PUBKEY_LENGTH;
     flags = SECP256K1_EC_UNCOMPRESSED;
     secp256k1_ec_pubkey_serialize(secp256k1ctx, &output[0], &output_length, &public_key, flags);
@@ -179,10 +179,7 @@ void fast_crypto_secp256k1_ec_pubkey_tweak_mul(char *szPublicKeyHex, const char 
         secp256k1ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
     }
 
-    //int flags = compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED;
     int flags =  SECP256K1_EC_UNCOMPRESSED;
-
-    //int publicKeyLen = compressed ? COMPRESSED_PUBKEY_LENGTH : DECOMPRESSED_PUBKEY_LENGTH;
     int publicKeyLen = DECOMPRESSED_PUBKEY_LENGTH;
 
     unsigned char publicKey[DECOMPRESSED_PUBKEY_LENGTH];
@@ -239,7 +236,7 @@ void fast_crypto_secp256k1_ec_pubkey_valid(char *szPublicKeyHex, int compressed)
         return;
     }
 
-    unsigned char output[DECOMPRESSED_PUBKEY_LENGTH + 64 + 1];
+    unsigned char output[DECOMPRESSED_PUBKEY_LENGTH];
     size_t output_length = DECOMPRESSED_PUBKEY_LENGTH;
     flags = SECP256K1_EC_UNCOMPRESSED;
     secp256k1_ec_pubkey_serialize(secp256k1ctx, &output[0], &output_length, &public_key, flags);
