@@ -90,6 +90,41 @@ RCT_REMAP_METHOD(secp256k1EcPubkeyTweakAdd,
     resolve(publicKeyTweakedHex);
 }
 
+
+RCT_REMAP_METHOD(secp256k1EcPubkeyTweakMul,
+                 secp256k1EcPubkeyTweakMul:(NSString *)publicKeyHex
+                 tweak:(NSString *)tweakHex
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+    int publicKeyHexLen = [publicKeyHex length] + 1;
+    char szPublicKeyHex[publicKeyHexLen];
+    const char *szPublicKeyHexConst = [publicKeyHex UTF8String];
+
+    strcpy(szPublicKeyHex, szPublicKeyHexConst);
+    fast_crypto_secp256k1_ec_pubkey_tweak_mul(szPublicKeyHex, [tweakHex UTF8String]);
+    NSString *publicKeyTweakedHex = [NSString stringWithUTF8String:szPublicKeyHex];
+    resolve(publicKeyTweakedHex);
+}
+
+
+RCT_REMAP_METHOD(secp256k1EcPubkeyValid,
+                 secp256k1EcPubkeyValid:(NSString *)publicKeyHex
+                 compressed:(NSInteger) compressed
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+    int publicKeyHexLen = [publicKeyHex length] + 1;
+    char szPublicKeyHex[publicKeyHexLen];
+    const char *szPublicKeyHexConst = [publicKeyHex UTF8String];
+
+    strcpy(szPublicKeyHex, szPublicKeyHexConst);
+    fast_crypto_secp256k1_ec_pubkey_valid(szPublicKeyHex, compressed);
+    NSString *publicKeyValidatedHex = [NSString stringWithUTF8String:szPublicKeyHex];
+    resolve(publicKeyValidatedHex);
+}
+
+
 RCT_REMAP_METHOD(pbkdf2Sha512,
                  pbkdf2Sha512:(NSString *)pass
                  salt:(NSString *)salt
