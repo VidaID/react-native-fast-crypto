@@ -21,6 +21,8 @@ public class RNFastCryptoModule extends ReactContextBaseJavaModule {
     public native String secp256k1EcPubkeyCreateJNI(String privateKeyHex, int compressed);
     public native String secp256k1EcPrivkeyTweakAddJNI(String privateKeyHex, String tweakHex);
     public native String secp256k1EcPubkeyTweakAddJNI(String publicKeyHex, String tweakHex, int compressed);
+    public native String secp256k1EcPubkeyTweakMulJNI(String publicKeyHex, String tweakHex);
+    public native String secp256k1EcPubkeyValidJNI(String publicKeyHex, int compressed);
     public native String pbkdf2Sha512JNI(String passHex, String saltHex, int iterations, int outputBytes);
 
     private final ReactApplicationContext reactContext;
@@ -92,6 +94,35 @@ public class RNFastCryptoModule extends ReactContextBaseJavaModule {
         try {
             String reply = secp256k1EcPubkeyTweakAddJNI(publicKeyHex, tweakHex, iCompressed); // test response from JNI
             Log.d("EcPubkeyTweakAddJNI", String.format("reply = %s", reply));
+            promise.resolve(reply);
+        } catch (Exception e) {
+            promise.reject("Err", e);
+        }
+    }
+
+    @ReactMethod
+    public void secp256k1EcPubkeyTweakMul(
+            String publicKeyHex,
+            String tweakHex,
+            Promise promise) {
+        try {
+            String reply = secp256k1EcPubkeyTweakMulJNI(publicKeyHex, tweakHex); // test response from JNI
+            Log.d("EcPubkeyTweakMulJNI", String.format("reply = %s", reply));
+            promise.resolve(reply);
+        } catch (Exception e) {
+            promise.reject("Err", e);
+        }
+    }
+
+    @ReactMethod
+    public void secp256k1EcPubkeyValid(
+            String publicKeyHex,
+            Boolean compressed,
+            Promise promise) {
+        int iCompressed = compressed ? 1 : 0;
+        try {
+            String reply = secp256k1EcPubkeyValidJNI(publicKeyHex, iCompressed); // test response from JNI
+            Log.d("EcPubkeyTweakMulJNI", String.format("reply = %s", reply));
             promise.resolve(reply);
         } catch (Exception e) {
             promise.reject("Err", e);
